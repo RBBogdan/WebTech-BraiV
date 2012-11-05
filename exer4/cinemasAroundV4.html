@@ -53,6 +53,7 @@
         }
    
         function initialize() {
+        		document.getElementById('info').innerHTML = '';
             var location = new google.maps.LatLng(lat,lng);
             map = new google.maps.Map(document.getElementById('map'), {
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -103,9 +104,9 @@
                     '<thead align="left" valign="top">' +
                         '<tr><td>Movie</td><td>Time</td><td>Child</td><td>Student</td><td>Adult</td></tr>' +
                     '</thead> <tbody>' +
-                        '<tr><td>Skyfall</td><td>17:00</td><td><input id="chmv1" type="number" name="quantityChTicket" value="0" size="1" onblur="checkQuantity(this.id);" />&times7</td><td><input id="stmv1" type="number" name="quantityStTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times10</td><td><input id="admv1" type="number" name="quantityAdTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times15</td><td><button id="button" class = "btn btn-primary" type="button" onclick="bookTicket(placeName,1);">Book!</button></td></tr>' +
-                        '<tr><td>Madagascar 3: Flucht durch Europa</td><td>19:30</td><td><input id="chmv2" type="number" name="quantityChTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times7</td><td><input id="stmv2" type="number" name="quantityStTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times10</td><td><input id="admv2" type="number" name="quantityAdTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times15</td><td><button id="button" class = "btn btn-primary" type="button" onclick="bookTicket(placeName,2);">Book!</button></td></tr>' +
-                        '<tr><td>Hotel Transsilvanien</td><td>21:30</td><td><input id="chmv3" type="number" name="quantityChTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times12</td><td><input id="stmv3" type="number" name="quantityStTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times15</td><td><input id="admv3" type="number" name="quantityAdTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times20</td><td><button id="button" class = "btn btn-primary" type="button" onclick="bookTicket(placeName,3);">Book!</button></td></tr>' +
+                        '<tr><td>Skyfall</td><td>17:00</td><td><input id="chmv1" type="number" name="quantityChTicket" value="0" size="1" onblur="checkQuantity(this.id);" />&times7</td><td><input id="stmv1" type="number" name="quantityStTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times10</td><td><input id="admv1" type="number" name="quantityAdTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times15</td><td><button id="button" class = "btn btn-primary" type="button" onclick="bookTicket(placeName,1);">Reserve Seats</button></td></tr>' +
+                        '<tr><td>Madagascar 3: Flucht durch Europa</td><td>19:30</td><td><input id="chmv2" type="number" name="quantityChTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times7</td><td><input id="stmv2" type="number" name="quantityStTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times10</td><td><input id="admv2" type="number" name="quantityAdTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times15</td><td><button id="button" class = "btn btn-primary" type="button" onclick="bookTicket(placeName,2);">Reserve Seats</button></td></tr>' +
+                        '<tr><td>Hotel Transsilvanien</td><td>21:30</td><td><input id="chmv3" type="number" name="quantityChTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times12</td><td><input id="stmv3" type="number" name="quantityStTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times15</td><td><input id="admv3" type="number" name="quantityAdTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times20</td><td><button id="button" class = "btn btn-primary" type="button" onclick="bookTicket(placeName,3);">Reserve Seats</button></td></tr>' +
                         '</tbody> </table>';
             seeBooking(placeName);
         }
@@ -148,7 +149,8 @@
 	        var elem = document.getElementById('info');
 	        elem.innerHTML = '';
 	        elem.innerHTML = '<br /><h2>'+ placeName + '</h2><br />';
-	        elem.innerHTML += '<canvas class = "btn btn-primary" width="300" height="200" id="cinemaCanvas"></canvas>';
+	        elem.innerHTML += '<canvas class = "btn btn-primary" width="300" height="200" id="cinemaCanvas"></canvas><br/>';
+	        elem.innerHTML += '<button id="button" class = "btn btn-primary" type="button" onclick="finalizeReservation()">Book!</button>';
 	        
 	        drawSeat(reservationQuantity);
 	        //alert("Your Reservation was successful!");
@@ -185,7 +187,7 @@
 					        			console.log("--"+totalReservation);
 			        			}
 			        			else {
-					        			alert("You have reserved seats for all your tickets!");
+				        			alert("You have reserved seats for all your tickets!");
 			        			}
 						   }
 						   else {
@@ -253,6 +255,18 @@
                 tempKey = "admv" + String(i+1);
                 document.getElementById(tempKey).value = (localStorage[n+tempKey]==null) ? 0 : Number(localStorage[n+tempKey]);
             }
+        }
+        
+        function finalizeReservation() {
+	        var elem = document.getElementById('info');
+	        
+	        elem.innerHTML = '';
+	        elem.innerHTML = '<br /><h2>'+ placeName + '</h2><br />';
+	        //We need a form here to send to DB
+	        elem.innerHTML += 'Reservation Name: <input type="text" name="reservationName" value="Enter your name..." id="reservationName" /><br/>';
+	        elem.innerHTML += 'email: <input type="email" name="emailForm" id="emailForm" /><br/>';
+	        elem.innerHTML += 'Reservation Telephone: <input type="tel" name="telephone" value="Enter a Telephone" id="telephone" /><br/>';
+	        elem.innerHTML += '<input type="submit" name="Confirm" value="Confirm" id="confirm" onclick="initialize()" /><br/>';
         }
 
     </script>
