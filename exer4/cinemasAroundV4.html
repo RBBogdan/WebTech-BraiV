@@ -122,7 +122,7 @@
                 var stmvQ = document.getElementById("stmv" + String(movieId)).value;
                 var admvQ = document.getElementById("admv" + String(movieId)).value;
                 
-                if ((chmvQ + stmvQ + admvQ) <= 0) {
+                if ((Number(chmvQ) + Number(stmvQ) + Number(admvQ)) <= 0) {
 	                alert("You have not selected your ticket for the Movie " + String(movieId) + "!\n\nPlease reserve your seat!");
 	                return;
                 }
@@ -138,45 +138,70 @@
                 
                 //alert("Your Reservation was successful!");
                 //elem.innerHTML = '';
-                reserveSeat();
+                reserveSeat((Number(chmvQ) + Number(stmvQ) + Number(admvQ)));
             } else {
                 alert("Your browser does not support local storage! Contact our server administrator for a backward compatible alternative... ")
             }
         }
         
-        function reserveSeat() {
+        function reserveSeat(reservationQuantity) {
 	        var elem = document.getElementById('info');
 	        elem.innerHTML = '';
 	        elem.innerHTML = '<br /><h2>'+ placeName + '</h2><br />';
 	        elem.innerHTML += '<canvas class = "btn btn-primary" width="300" height="200" id="cinemaCanvas"></canvas>';
 	        
-	        drawSeat();
+	        drawSeat(reservationQuantity);
 	        //alert("Your Reservation was successful!");
 	        //elem.innerHTML = '';
         }
         
-        function drawSeat() {
+        function drawSeat(reservationQuantity) {
 	        var cinemaCanvas = document.getElementById('cinemaCanvas');
 	        var canvasLeft = cinemaCanvas.offsetLeft;
 	        var canvasTop = cinemaCanvas.offsetTop;
 	        var seats = [];
 	        var cnt = cinemaCanvas.getContext('2d');
 	        
+	        var totalReservation = reservationQuantity;
+	        console.log(reservationQuantity);
+	        
 	        cinemaCanvas.addEventListener('click', function(event) {
 		        var x = event.pageX - canvasLeft;
 		        var y = event.pageY - canvasTop;
 
 		        seats.forEach( function (seat) {
-			        if((y > seat.top) && (y < seat.top + seat.height) && (x > seat.left) && (x < seat.left + seat.width)) {
-							//alert("clicked");
-							seat.color = 'red';
-							cnt.fillStyle = seat.color;
-							cnt.fillRect(seat.left, seat.top, seat.width, seat.height);
-							cnt.textAlign = 'center';
-		        			cnt.fillStyle = 'white';
-		        			cnt.fillText(seat.text, seat.left + (seat.width/2), seat.top + ((2*seat.height)/3));
+			        
+				     if((y > seat.top) && (y < seat.top + seat.height) && (x > seat.left) && (x < seat.left + seat.width)) {
+					     if(!seat.clicked) {
+							  if(totalReservation > 0) {
+										seat.clicked = true;
+										seat.color = 'yellow';
+										cnt.fillStyle = seat.color;
+										cnt.fillRect(seat.left, seat.top, seat.width, seat.height);
+										cnt.textAlign = 'center';
+					        			cnt.fillStyle = 'black';
+					        			cnt.fillText(seat.text, seat.left + (seat.width/2), seat.top + ((2*seat.height)/3));
+					        			totalReservation--;
+					        			console.log("--"+totalReservation);
+			        			}
+			        			else {
+					        			alert("You have reserved seats for all your tickets!");
+			        			}
+						   }
+						   else {
+						     seat.clicked = false;
+						     seat.color = 'white';
+						     cnt.fillStyle = seat.color;
+					        cnt.fillRect(seat.left, seat.top, seat.width, seat.height);
+					        cnt.textAlign = 'center';
+					        cnt.fillStyle = 'blue';
+					        cnt.fillText(seat.text, seat.left + (seat.width/2), seat.top + ((2*seat.height)/3));
+					        totalReservation++;
+					        console.log("++"+totalReservation);
+					     }
 				     }
-		        });  
+				     
+		        });
 		     }, false);
 	        
 	        for (var i=0; i < 2; i++) {
@@ -187,7 +212,8 @@
 				        height: 30,
 				        top: 10+(i*45),
 				        left: 25 + (j*55),
-				        text: (j+1)+""+(i+1)
+				        text: (j+1)+""+(i+1),
+				        clicked: false
 			        });
 		        }
 	        }
@@ -201,7 +227,8 @@
 				        height: 30,
 				        top: 120+(i*45),
 				        left: 25 + (j*55),
-				        text: (j+1)+""+(i+3)
+				        text: (j+1)+""+(i+3),
+				        clicked: false
 			        });
 		        }
 	        }
