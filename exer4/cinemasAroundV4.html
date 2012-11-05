@@ -148,25 +148,50 @@
 	        var elem = document.getElementById('info');
 	        elem.innerHTML = '';
 	        elem.innerHTML = '<h1>'+ placeName + '</h1>';
-	        elem.innerHTML = '<canvas width="500" height="200" id="cinemaCanvas">dfgf</canvas>';
+	        elem.innerHTML = '<p><p><canvas class = "btn btn-primary" width="300" height="200" id="cinemaCanvas"></canvas>';
 	        
 	        drawSeat();
-	        alert("Your Reservation was successful!");
-	        elem.innerHTML = '';
+	        //alert("Your Reservation was successful!");
+	        //elem.innerHTML = '';
         }
         
         function drawSeat() {
 	        var cinemaCanvas = document.getElementById('cinemaCanvas');
+	        var canvasLeft = cinemaCanvas.offsetLeft;
+	        var canvasTop = cinemaCanvas.offsetTop;
+	        var seats = [];
 	        var cnt = cinemaCanvas.getContext('2d');
-	        cnt.beginPath();
-	        cnt.rect(188, 50, 200, 100);
-	        cnt.fillStyle = 'yellow';
-	        cnt.fill();
-	        cnt.lineWidth = 1;
-	        cnt.strokeStyle = 'white';
-	        cnt.stroke();
-	        cnt.closePath();
-	        alert("Yblah");
+	        
+	        cinemaCanvas.addEventListener('click', function(event) {
+		        var x = event.pageX - canvasLeft;
+		        var y = event.pageY - canvasTop;
+
+		        seats.forEach( function (seat) {
+			        if((y > seat.top) && (y < seat.top + seat.height) &&
+				        (x > seat.left) && (x < seat.left + seat.width)) {
+					        alert("clicked");
+				     }
+		        });  
+		     }, false);
+	        
+	        for (var i=0; i < 5; i++) {
+		        seats.push({
+			        color: '#FFFFFF',
+			        width: 30,
+			        height: 30,
+			        top: 50,
+			        left: 50 + (i*50),
+			        text: ""+i 
+		        });
+	        }
+	        
+	        seats.forEach(function(seat) {
+		        cnt.fillStyle = seat.color;
+		        cnt.fillRect(seat.left, seat.top, seat.width, seat.height);
+		        cnt.textAlign = 'center';
+		        cnt.fillStyle = 'blue';
+		        cnt.fillText(seat.text,seat.left+(seat.width/2),seat.top+((2*seat.height)/3));
+		     });
         }
       
         function seeBooking(pName) {
