@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 
-    <title>Exercise 3.1</title>
+    <title>Exercise 4</title>
     <LINK href="cinemasAroundStyle.css" rel="stylesheet" type="text/css">
     <script src="https://maps.googleapis.com/maps/api/js?sensor=true&libraries=places"></script>
     <header class = "page-header">
@@ -96,6 +96,7 @@
 
         function availabilityCheking() {
             var elem = document.getElementById('info');
+            
             elem.innerHTML = '<br /><h2>'+ placeName + '</h2><br />';
             elem.innerHTML += '<p>' +
                 '<table id="bookingInfo" class="table" onload="seeBooking();">' +
@@ -130,13 +131,42 @@
                 localStorage[n + "stmv" + String(movieId)] = (stmvQ > 0) ? stmvQ : 0;
                 localStorage[n + "admv" + String(movieId)] = (admvQ > 0) ? admvQ : 0;
                 
-                var elem = document.getElementById('info');
-                elem.innerHTML='<h1>'+ placeName + '</h1>';
-                alert("Your Reservation was successful!");
-                elem.innerHTML ='';
+                //add a new function that renders a canvas obj with seats!!!
+                //var elem = document.getElementById('info');
+                //elem.innerHTML += '<p><p><canvas width="500" height="200" id="cinemaCanvas" onclick="reserveSeat();"></canvas>';
+                
+                
+                //alert("Your Reservation was successful!");
+                //elem.innerHTML = '';
+                reserveSeat();
             } else {
                 alert("Your browser does not support local storage! Contact our server administrator for a backward compatible alternative... ")
             }
+        }
+        
+        function reserveSeat() {
+	        var elem = document.getElementById('info');
+	        elem.innerHTML = '';
+	        elem.innerHTML = '<h1>'+ placeName + '</h1>';
+	        elem.innerHTML = '<canvas width="500" height="200" id="cinemaCanvas">dfgf</canvas>';
+	        
+	        drawSeat();
+	        alert("Your Reservation was successful!");
+	        elem.innerHTML = '';
+        }
+        
+        function drawSeat() {
+	        var cinemaCanvas = document.getElementById('cinemaCanvas');
+	        var cnt = cinemaCanvas.getContext('2d');
+	        cnt.beginPath();
+	        cnt.rect(188, 50, 200, 100);
+	        cnt.fillStyle = 'yellow';
+	        cnt.fill();
+	        cnt.lineWidth = 1;
+	        cnt.strokeStyle = 'white';
+	        cnt.stroke();
+	        cnt.closePath();
+	        alert("Yblah");
         }
       
         function seeBooking(pName) {
