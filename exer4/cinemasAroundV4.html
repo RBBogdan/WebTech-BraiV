@@ -147,8 +147,8 @@
         function reserveSeat() {
 	        var elem = document.getElementById('info');
 	        elem.innerHTML = '';
-	        elem.innerHTML = '<h1>'+ placeName + '</h1>';
-	        elem.innerHTML = '<p><p><canvas class = "btn btn-primary" width="300" height="200" id="cinemaCanvas"></canvas>';
+	        elem.innerHTML = '<br /><h2>'+ placeName + '</h2><br />';
+	        elem.innerHTML += '<canvas class = "btn btn-primary" width="300" height="200" id="cinemaCanvas"></canvas>';
 	        
 	        drawSeat();
 	        //alert("Your Reservation was successful!");
@@ -167,30 +167,51 @@
 		        var y = event.pageY - canvasTop;
 
 		        seats.forEach( function (seat) {
-			        if((y > seat.top) && (y < seat.top + seat.height) &&
-				        (x > seat.left) && (x < seat.left + seat.width)) {
-					        alert("clicked");
+			        if((y > seat.top) && (y < seat.top + seat.height) && (x > seat.left) && (x < seat.left + seat.width)) {
+							//alert("clicked");
+							seat.color = 'red';
+							cnt.fillStyle = seat.color;
+							cnt.fillRect(seat.left, seat.top, seat.width, seat.height);
+							cnt.textAlign = 'center';
+		        			cnt.fillStyle = 'white';
+		        			cnt.fillText(seat.text, seat.left + (seat.width/2), seat.top + ((2*seat.height)/3));
 				     }
 		        });  
 		     }, false);
 	        
-	        for (var i=0; i < 5; i++) {
-		        seats.push({
-			        color: '#FFFFFF',
-			        width: 30,
-			        height: 30,
-			        top: 50,
-			        left: 50 + (i*50),
-			        text: ""+i 
-		        });
+	        for (var i=0; i < 2; i++) {
+		        for(var j=0; j< 5; j++) {
+			        seats.push({
+				        color: 'white',
+				        width: 30,
+				        height: 30,
+				        top: 10+(i*45),
+				        left: 25 + (j*55),
+				        text: (j+1)+""+(i+1)
+			        });
+		        }
 	        }
 	        
-	        seats.forEach(function(seat) {
+	        
+	        for (var i=0; i < 2; i++) {
+		        for(var j=0; j< 5; j++) {
+			        seats.push({
+				        color: 'white',
+				        width: 30,
+				        height: 30,
+				        top: 120+(i*45),
+				        left: 25 + (j*55),
+				        text: (j+1)+""+(i+3)
+			        });
+		        }
+	        }
+	        
+	        seats.forEach( function(seat) {
 		        cnt.fillStyle = seat.color;
 		        cnt.fillRect(seat.left, seat.top, seat.width, seat.height);
 		        cnt.textAlign = 'center';
 		        cnt.fillStyle = 'blue';
-		        cnt.fillText(seat.text,seat.left+(seat.width/2),seat.top+((2*seat.height)/3));
+		        cnt.fillText(seat.text, seat.left + (seat.width/2), seat.top + ((2*seat.height)/3));
 		     });
         }
       
