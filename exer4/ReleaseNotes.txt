@@ -1,0 +1,17 @@
+Web Technologies - Assignment 4
+
+Release Notes
+
+
+Authors:
+ - Jelena Marković
+ - Thomas Eck
+ - Spyridon Papadopoulos
+ - Bogdan Rebedeu
+(Team: BraiV)
+
+
+The code that you found in this folder is just for when you want to see the full code…
+
+To see the webpage at work, please use the following link: 
+http://buchhaltung-eck.de/webtech/
