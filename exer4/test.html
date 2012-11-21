@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+	//AJAX Request
+	var AsyncRequest = null;
+	try {
+	    AsyncRequest = new XMLHttpRequest();
+	}
+	catch (e) {
+	    try {
+		AsyncRequest = new ActiveXObject("Msxml2.XMLHTTP");
+	    }
+	    catch (e) {
+		try {
+		    AsyncRequest = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		catch (e) {
+		    AsyncRequest = null;
+		}
+	    }
+	}
+	var cinema = "Capitol- Kino";
+	var movie = "Skyfall";
+	
+	var _parameter = "action=getReservedSeats";
+	_parameter += "&cinema=" + cinema;
+	_parameter += "&movie=" + movie;
+	
+	AsyncRequest.open("POST", "webservice");
+	AsyncRequest.onreadystatechange = readyCallback;
+	AsyncRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	AsyncRequest.send(_parameter);
+
+	function readyCallback() {
+		if (AsyncRequest.readyState == 4) {
+			if (AsyncRequest.status == 200) {
+				alert(AsyncRequest.responseText);
+			}
+		}
+	}
+    </script>
+  </head>
+  <body>
+    <p>test</p>
+  </body>
+</html>
