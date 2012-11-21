@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Exercise 4</title>
+    <LINK href="cinemasAroundStyle.css" rel="stylesheet" type="text/css">
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=true&libraries=places"></script>
+    <header class = "page-header">
+    <div class="navbar">
+    <div class="container">
+    <a class="brand">KinoSearch</a>
+    <!--<header class = "page-header">-->
+    <!--<h2 class= "brand"> Find and book cinema </h2>-->
+    <p></p>
+    <!--</header>-->
+    </header>
+
+    <div id="content">
+    <div id="instruction" class = "alert alert-info">Click on the Kino to book a movie!</div>
+    
+    <style>
+      #map {
+        height: 480px;
+        width: 640px;
+        border: 1px solid #333;
+        margin-top: 0.6em;
+      }
+    </style>
+     
+    <script>
+        var map;
+        var infowindow;
+        var lat;
+        var lng;
+        var reservedSeats= "";
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                x.innerHTML="Geolocation is not supported by this browser.";
+            }
+        }
+
+        google.maps.event.addDomListener(window, 'load', getLocation);  
+     
+        function showPosition(position) {
+            lat = position.coords.latitude;
+            lng = position.coords.longitude;
+            var latlon = lat+","+lng;
+            var img_url="http://maps.googleapis.com/maps/api/staticmap?center="
+                +latlon+"&markers=icon:http://tinyurl.com/2ftvtt6|"+latlon+"&zoom=13&size=640x480&sensor=false";
+            document.getElementById("map").innerHTML="<img src='"+img_url+"'>";
+        }
+   
+        function initialize() {
+        		document.getElementById('info').innerHTML = '';
+        		reservedSeats= "";
+            var location = new google.maps.LatLng(lat,lng);
+            map = new google.maps.Map(document.getElementById('map'), {
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                center: location,
+                zoom: 13
+            });
+
+            var request = {
+                location: location,
+                radius: 10000,
+                keyword: ['kino']
+            };
+
+            infowindow = new google.maps.InfoWindow();
+            var service = new google.maps.places.PlacesService(map);
+            service.nearbySearch(request, callback);
+        }
+
+        function callback(results, status) {
+            if (status == google.maps.places.PlacesServiceStatus.OK) {
+                for (var i = 0; i < results.length; i++) {
+                    createMarker(results[i]);
+                }
+            }
+        }
+
+        function createMarker(place) {
+            var placeLoc = place.geometry.location;
+            var marker = new google.maps.Marker({
+                map: map,
+                position: place.geometry.location
+            });
+            
+            google.maps.event.addListener(marker, 'click', function() {
+                placeName=place.name;
+                infowindow.setContent('<h3>' + place.name + '</h3>' + '<p>' +
+                    '<button class = "btn btn-primary" onclick="availabilityCheking();">Check Availability</button>');
+                infowindow.open(map, this);
+            });
+        }
+
+        function availabilityCheking() {
+            var elem = document.getElementById('info');
+            
+            elem.innerHTML = '<br /><h2>'+ placeName + '</h2><br />';
+            elem.innerHTML += '<p>' +
+                '<table id="bookingInfo" class="table" onload="seeBooking();">' +
+                    '<thead align="left" valign="top">' +
+                        '<tr><td>Movie</td><td>Time</td><td>Child</td><td>Student</td><td>Adult</td></tr>' +
+                    '</thead> <tbody>' +
+                        '<tr><td>Skyfall</td><td>17:00</td><td><input id="chmv1" type="number" name="quantityChTicket" value="0" size="1" onblur="checkQuantity(this.id);" />&times7</td><td><input id="stmv1" type="number" name="quantityStTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times10</td><td><input id="admv1" type="number" name="quantityAdTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times15</td><td><button id="button" class = "btn btn-primary" type="button" onclick="bookTicket(\''+placeName+'\',1,\'Skyfall\');">Reserve Seats</button></td></tr>' +
+                        '<tr><td>Madagascar 3: Flucht durch Europa</td><td>19:30</td><td><input id="chmv2" type="number" name="quantityChTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times7</td><td><input id="stmv2" type="number" name="quantityStTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times10</td><td><input id="admv2" type="number" name="quantityAdTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times15</td><td><button id="button" class = "btn btn-primary" type="button" onclick="bookTicket(\''+placeName+'\',2,\'Madagascar 3: Flucht durch Europa\');">Reserve Seats</button></td></tr>' +
+                        '<tr><td>Hotel Transsilvanien</td><td>21:30</td><td><input id="chmv3" type="number" name="quantityChTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times12</td><td><input id="stmv3" type="number" name="quantityStTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times15</td><td><input id="admv3" type="number" name="quantityAdTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times20</td><td><button id="button" class = "btn btn-primary" type="button" onclick="bookTicket(\''+placeName+'\',3,\'Hotel Transsilvanien\');">Reserve Seats</button></td></tr>' +
+                        '</tbody> </table>';
+            seeBooking(placeName);
+        }
+        
+        function checkQuantity(id) {
+        		document.getElementById(id).value = (document.getElementById(id).value < 0) ? 0 : document.getElementById(id).value;
+        }
+
+        function bookTicket(pName, movieId, movieName) {
+            if (typeof(Storage)!=="undefined") {
+                var n = pName+"."; //the name of the place
+                
+                var chmvQ = document.getElementById("chmv" + String(movieId)).value;
+                var stmvQ = document.getElementById("stmv" + String(movieId)).value;
+                var admvQ = document.getElementById("admv" + String(movieId)).value;
+                
+                if ((Number(chmvQ) + Number(stmvQ) + Number(admvQ)) <= 0) {
+	                alert("You have not selected your ticket for the Movie " + String(movieId) + "!\n\nPlease reserve your seat!");
+	                return;
+                }
+                
+                localStorage[n + "chmv" + String(movieId)] = (chmvQ > 0) ? chmvQ : 0;
+                localStorage[n + "stmv" + String(movieId)] = (stmvQ > 0) ? stmvQ : 0;
+                localStorage[n + "admv" + String(movieId)] = (admvQ > 0) ? admvQ : 0;
+                
+                reserveSeat(pName, movieId, movieName, (Number(chmvQ) + Number(stmvQ) + Number(admvQ)));
+            } else {
+                alert("Your browser does not support local storage! Contact our server administrator for a backward compatible alternative... ")
+            }
+        }
+        
+        function reserveSeat(pName, movieId, movieName, reservationQuantity) {
+		        var elem = document.getElementById('info');
+		        
+
+				var AsyncRequest = null;
+				try {
+				    AsyncRequest = new XMLHttpRequest();
+				}
+				catch (e) {
+				    try {
+					AsyncRequest = new ActiveXObject("Msxml2.XMLHTTP");
+				    }
+				    catch (e) {
+					try {
+					    AsyncRequest = new ActiveXObject("Microsoft.XMLHTTP");
+					}
+					catch (e) {
+					    AsyncRequest = null;
+					}
+				    }
+				}
+				var cinema = pName;
+				var movie = movieName;
+				
+				var _parameter = "action=getReservedSeats";
+				_parameter += "&cinema=" + cinema;
+				_parameter += "&movie=" + movie;
+
+				AsyncRequest.open("POST", "Webservice");
+				AsyncRequest.onreadystatechange = readyCallback;
+				AsyncRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+				AsyncRequest.send(_parameter);
+
+				function readyCallback() {
+					if (AsyncRequest.readyState == 4) {
+						if (AsyncRequest.status == 200) {
+							//alert(AsyncRequest.responseText);
+							
+							seats = drawSeat(reservationQuantity,AsyncRequest.responseText);
+						}
+					}
+				}
+				elem.innerHTML = '';
+		      elem.innerHTML = '<br /><h2>'+ placeName + '</h2><br />';
+		      elem.innerHTML += '<canvas class = "btn btn-primary" width="300" height="200" id="cinemaCanvas"></canvas><br/><br/>';
+		      elem.innerHTML += '<button id="button" class = "btn btn-primary" type="button" onclick="finalizeReservation(\''+pName+'\',\''+movieName+'\',\''+reservedSeats+'\')">Book!</button>';
+        }
+        
+        function drawSeat(reservationQuantity,response) {
+
+	        var cinemaCanvas = document.getElementById('cinemaCanvas');
+	        var canvasLeft = cinemaCanvas.offsetLeft;
+	        var canvasTop = cinemaCanvas.offsetTop;
+	        var seats = [];
+	        var cnt = cinemaCanvas.getContext('2d');
+
+	        var totalReservation = reservationQuantity;
+	        console.log(reservationQuantity);
+
+	        cinemaCanvas.addEventListener('click', function(event) {
+		        var x = event.pageX - canvasLeft;
+		        var y = event.pageY - canvasTop;
+
+		        seats.forEach( function (seat) {
+
+				     if((y > seat.top) && (y < seat.top + seat.height) && (x > seat.left) && (x < seat.left + seat.width)) {
+					     if(!seat.clicked) {
+							  if(totalReservation > 0) {
+										seat.clicked = true;
+										seat.color = 'yellow';
+										cnt.fillStyle = seat.color;
+										cnt.fillRect(seat.left, seat.top, seat.width, seat.height);
+										cnt.textAlign = 'center';
+					        			cnt.fillStyle = 'black';
+					        			cnt.fillText(seat.text, seat.left + (seat.width/2), seat.top + ((2*seat.height)/3));
+					        			console.log("$$"+reservedSeats+"!\n");
+					        			reservedSeats += (reservedSeats == "" ) ? seat.text : ";" + seat.text;
+					        			totalReservation--;
+					        			console.log("--"+totalReservation+"\t"+reservedSeats);
+			        			}
+			        			else {
+				        			alert("You have reserved seats for all your tickets!");
+			        			}
+						   }
+						   else if(seat.clicked && (seat.color == 'red')) {
+							   alert("Seat has already been booked!\nPlease choose another one!")
+						   }
+						   else {
+						     seat.clicked = false;
+						     seat.color = 'white';
+						     cnt.fillStyle = seat.color;
+					        cnt.fillRect(seat.left, seat.top, seat.width, seat.height);
+					        cnt.textAlign = 'center';
+					        cnt.fillStyle = 'blue';
+					        cnt.fillText(seat.text, seat.left + (seat.width/2), seat.top + ((2*seat.height)/3));
+					        console.log("$$"+reservedSeats+"!\n");
+					        var tempSeats = reservedSeats;
+							  reservedSeats = (tempSeats.indexOf(seat.text) == 0 ) ? tempSeats.substring(tempSeats.indexOf(seat.text)+3) : tempSeats.substring(0,tempSeats.indexOf(seat.text)-1) + tempSeats.substring(tempSeats.indexOf(seat.text)+2, tempSeats.length);
+					        totalReservation++;
+					        console.log("++"+totalReservation+"\t"+reservedSeats);
+					        
+					     }
+				     }
+
+		        });
+		     }, false);
+
+	        for (var i=0; i < 2; i++) {
+		        for(var j=0; j< 5; j++) {
+			        seats.push({
+				        text: (j+1)+""+(i+1),
+				        color: 'white',
+				        width: 30,
+				        height: 30,
+				        top: 10+(i*45),
+				        left: 25 + (j*55),
+				        clicked: false
+			        });
+		        }
+	        }
+
+
+	        for (var i=0; i < 2; i++) {
+		        for(var j=0; j< 5; j++) {
+			        seats.push({
+				        color: 'white',
+				        width: 30,
+				        height: 30,
+				        top: 120+(i*45),
+				        left: 25 + (j*55),
+				        text: (j+1)+""+(i+3),
+				        clicked: false
+			        });
+		        }
+	        }
+
+	        seats.forEach( function(seat) {
+		        seat.color = (response.indexOf(seat.text) != -1) ? 'red' : seat.color;
+		        seat.clicked = (response.indexOf(seat.text) != -1) ? true : seat.clicked;
+
+		        cnt.fillStyle = seat.color;
+		        cnt.fillRect(seat.left, seat.top, seat.width, seat.height);
+		        cnt.textAlign = 'center';
+		        cnt.fillStyle = (seat.color == 'red') ? 'white' : 'blue';
+		        cnt.fillText(seat.text, seat.left + (seat.width/2), seat.top + ((2*seat.height)/3));
+		     });
+        }
+      
+        function seeBooking(pName) {
+            var n = pName+"."; //the name of the place
+            for (var i=0; i<3; i++) { //use just 3 movies. This may be extended when we add variable number of movies for each Kino.
+                var tempKey = "chmv" + String(i+1);
+                document.getElementById(tempKey).value = (localStorage[n+tempKey]==null) ? 0 : Number(localStorage[n+tempKey]);
+                tempKey = "stmv" + String(i+1);
+                document.getElementById(tempKey).value = (localStorage[n+tempKey]==null) ? 0 : Number(localStorage[n+tempKey]);
+                tempKey = "admv" + String(i+1);
+                document.getElementById(tempKey).value = (localStorage[n+tempKey]==null) ? 0 : Number(localStorage[n+tempKey]);
+            }
+        }
+        
+        function finalizeReservation(cinema, movieName) {
+	        var elem = document.getElementById('info');
+
+		
+				if(reservedSeats == "") {
+					alert("There are no reserved seats!\nPlease reserve.");
+					return false;
+				}
+			 console.log("finalize seats"+reservedSeats+"!");
+
+	        elem.innerHTML = '';
+	        elem.innerHTML = '<br /><h2>'+ placeName + '</h2><br />';
+	        //We need a form here to send to DB
+	        elem.innerHTML += 'Reservation Name: <input type="text" name="reservationName" value="Enter your name..." id="reservationName" /><br/>';
+	        elem.innerHTML += 'Email: <input type="email" name="emailForm" id="emailForm" /><br/>';
+	        elem.innerHTML += 'Reservation Telephone: <input type="tel" name="telephone" value="Enter a Telephone" id="telephone" /><br/>';
+	        elem.innerHTML += '<input type="submit" class = "btn btn-primary" name="Confirm" value="Confirm" id="confirm" onclick="sendReservation(\''+cinema+'\',\''+movieName+'\')" /><br/>';
+        }
+        
+			function sendReservation(cinema, movieName) {
+				var name = document.getElementById("reservationName").value;
+				var mail = document.getElementById("emailForm").value;
+				var phone = document.getElementById("telephone").value;
+				
+				var AsyncRequest = null;
+				try {
+				    AsyncRequest = new XMLHttpRequest();
+				}
+				catch (e) {
+				    try {
+					AsyncRequest = new ActiveXObject("Msxml2.XMLHTTP");
+				    }
+				    catch (e) {
+					try {
+					    AsyncRequest = new ActiveXObject("Microsoft.XMLHTTP");
+					}
+					catch (e) {
+					    AsyncRequest = null;
+					}
+				    }
+				}
+				
+				var _parameter = "action=doReservation";
+				_parameter += "&cinema=" + cinema;
+				_parameter += "&movie=" + movieName;
+				_parameter += "&seats=" + reservedSeats;
+				_parameter += "&name=" + name;		
+				_parameter += "&mail=" + mail;	
+				_parameter += "&phone=" + phone;	
+				
+				AsyncRequest.open("POST", "Webservice");
+				AsyncRequest.onreadystatechange = readyCallback;
+				AsyncRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+				AsyncRequest.send(_parameter);
+				
+				function readyCallback() {
+					if (AsyncRequest.readyState == 4) {
+						if (AsyncRequest.status == 200) {
+							var success = AsyncRequest.responseText;
+							if (success == "-1") {
+								alert("Reservation ERROR! \nPlease try again...");
+							} else {
+								var msg = "Reservation done! \n Your reservation ID is: " + success;
+								alert(msg);
+							}
+							alert("Reservation done!");
+							alert(AsyncRequest.responseText);
+							initialize();
+						}
+					}
+				}
+			}
+
+    </script>
+  </head>
+  <body>
+    <div id="map" class = "img-rounded"></div>
+    <br />
+    <button id="button" class = "btn btn-primary" onclick="initialize()">Show Kinos within 10 km around me </button>
+    <br />
+    <div id="info"></div>
+      <p></p>
+  </body>
+</html>
