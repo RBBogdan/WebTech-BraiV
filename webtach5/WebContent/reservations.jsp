@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Exercise 4</title>
+<title>Exercise 5 - Reservations Management</title>
 <LINK href="cinemasAroundStyle.css" rel="stylesheet" type="text/css">
 
 </head>

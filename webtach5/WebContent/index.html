@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Exercise 4</title>
+    <title>Exercise 5 - Cinema Reservations</title>
     <LINK href="cinemasAroundStyle.css" rel="stylesheet" type="text/css">
     <script src="https://maps.googleapis.com/maps/api/js?sensor=true&libraries=places"></script>
     <header class = "page-header">
@@ -108,7 +108,7 @@
                         '<tr><td>Madagascar 3: Flucht durch Europa</td><td>19:30</td><td><input id="chmv2" type="number" name="quantityChTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times7</td><td><input id="stmv2" type="number" name="quantityStTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times10</td><td><input id="admv2" type="number" name="quantityAdTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times15</td><td><button id="button" class = "btn btn-primary" type="button" onclick="bookTicket(\''+placeName+'\',2,\'Madagascar 3: Flucht durch Europa\');">Reserve Seats</button></td></tr>' +
                         '<tr><td>Hotel Transsilvanien</td><td>21:30</td><td><input id="chmv3" type="number" name="quantityChTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times12</td><td><input id="stmv3" type="number" name="quantityStTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times15</td><td><input id="admv3" type="number" name="quantityAdTicket" value="0" size="1" onblur="checkQuantity(this.id);"/>&times20</td><td><button id="button" class = "btn btn-primary" type="button" onclick="bookTicket(\''+placeName+'\',3,\'Hotel Transsilvanien\');">Reserve Seats</button></td></tr>' +
                         '</tbody> </table>';
-            seeBooking(placeName);
+            //seeBooking(placeName);
         }
         
         function checkQuantity(id) {
@@ -128,9 +128,9 @@
 	                return;
                 }
                 
-                localStorage[n + "chmv" + String(movieId)] = (chmvQ > 0) ? chmvQ : 0;
-                localStorage[n + "stmv" + String(movieId)] = (stmvQ > 0) ? stmvQ : 0;
-                localStorage[n + "admv" + String(movieId)] = (admvQ > 0) ? admvQ : 0;
+                //localStorage[n + "chmv" + String(movieId)] = (chmvQ > 0) ? chmvQ : 0;
+                //localStorage[n + "stmv" + String(movieId)] = (stmvQ > 0) ? stmvQ : 0;
+                //localStorage[n + "admv" + String(movieId)] = (admvQ > 0) ? admvQ : 0;
                 
                 reserveSeat(pName, movieId, movieName, (Number(chmvQ) + Number(stmvQ) + Number(admvQ)));
             } else {
@@ -356,7 +356,13 @@
 				function readyCallback() {
 					if (AsyncRequest.readyState == 4) {
 						if (AsyncRequest.status == 200) {
-							alert("Reservation done!");
+							var success = AsyncRequest.responseText;
+							if (success == "-1") {
+								alert("Reservation ERROR! \nPlease try again...");
+							} else {
+								var msg = "Reservation done! \n Your reservation ID is: " + success;
+								alert(msg);
+							}
 							initialize();
 						}
 					}
