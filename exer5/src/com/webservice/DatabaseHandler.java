@@ -9,9 +9,9 @@ import java.util.ArrayList;
 public class DatabaseHandler {
     private Statement stmt;
     private Connection con;
-    String url = "jdbc:mysql://85.13.138.126:3306/d0155718";
-    String user = "d0155718";
-    String pwd = "bravewebtech";
+    String url = "jdbc:mysql://IP:PORT/DB";
+    String user = "USER";
+    String pwd = "PASS";
 
     public DatabaseHandler() {
     }
